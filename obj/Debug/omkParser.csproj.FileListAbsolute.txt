@@ -1,0 +1,13 @@
+c:\users\elz\documents\visual studio 2013\Projects\omkParser\omkParser\bin\Debug\omkParser.exe.config
+c:\users\elz\documents\visual studio 2013\Projects\omkParser\omkParser\bin\Debug\omkParser.exe
+c:\users\elz\documents\visual studio 2013\Projects\omkParser\omkParser\bin\Debug\omkParser.pdb
+c:\users\elz\documents\visual studio 2013\Projects\omkParser\omkParser\obj\Debug\omkParser.csprojResolveAssemblyReference.cache
+c:\users\elz\documents\visual studio 2013\Projects\omkParser\omkParser\obj\Debug\omkParser.exe
+c:\users\elz\documents\visual studio 2013\Projects\omkParser\omkParser\obj\Debug\omkParser.pdb
+c:\users\elz\documents\visual studio 2013\Projects\omkParser\omkParser\bin\Debug\HtmlAgilityPack.dll
+c:\users\elz\documents\visual studio 2013\Projects\omkParser\omkParser\bin\Debug\HtmlAgilityPack.pdb
+c:\users\elz\documents\visual studio 2013\Projects\omkParser\omkParser\bin\Debug\HtmlAgilityPack.xml
+C:\Users\ELZ\Documents\Visual Studio 2013\Projects\omkParser\omkParser\bin\Debug\Newtonsoft.Json.dll
+C:\Users\ELZ\Documents\Visual Studio 2013\Projects\omkParser\omkParser\bin\Debug\Newtonsoft.Json.xml
+C:\Users\ELZ\Documents\Visual Studio 2013\Projects\omkParser\omkParser\bin\Debug\RabbitMQ.Client.dll
+C:\Users\ELZ\Documents\Visual Studio 2013\Projects\omkParser\omkParser\bin\Debug\RabbitMQ.Client.xml
