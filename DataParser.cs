@@ -41,6 +41,41 @@ namespace omkParser
             }
             return links;
         }
+        //статус: новый, на рассмотрении, продлённый
+        public List<String> CollectActiveLinks(HtmlDocument doc)
+        {
+            List<String> links = new List<String>();
+            var table = doc.DocumentNode.SelectSingleNode("//table[@class='framer pt8']");
+            if (table != null)
+            {
+                var trNodes = table.ChildNodes.Where(x => x.Name == "tr").Skip(2);
+                foreach (var item in trNodes)
+                {
+                    var tdNodes = item.ChildNodes.Where(x => x.Name == "td").ToArray();
+                    if (tdNodes.Count() != 0)
+                    {
+                        string status = tdNodes[0].InnerText;
+                        if (status == "на рассмотрении" || status == "новый" || status == "продлённый")
+                        {
+                            foreach (var node in tdNodes)
+                            {
+                                if (node.ChildNodes.Where(x => x.Name == "a").Count() != 0)
+                                {
+                                    var link = node.ChildNodes.Where(x => x.Name == "a").FirstOrDefault().Attributes["href"].Value;
+                                    links.Add(link);
+                                }
+                            }
+                        }                                                
+                    }
+                }
+            }
+            else
+            {
+                Debug.WriteLine("не найдено!!!");
+            }
+            return links;
+        }
+
         public string ParseTender(HtmlDocument doc, string linkToTender)
         {
             var info = doc.DocumentNode.SelectSingleNode("//td[@class='bodypanel']");
@@ -74,8 +109,8 @@ namespace omkParser
                 new Model { FieldName = "State", FieldType = "String", FieldValue = nodes[1].NextSibling.InnerText.Trim(), FieldDisplayName = "Состояние процедуры", Position = 2 },
                 new Model { FieldName = "Platfom", FieldType = "String", FieldValue = "OMK", FieldDisplayName = "Площадка", Position = 3 },
                 new Model { FieldName = "Region", FieldType = "String", FieldValue = DefineRegion(nodes[2].NextSibling.InnerText.Trim()), FieldDisplayName = "Регион", Position = 4 },
-                new Model { FieldName = "LinkToPlatform", FieldType = "String", FieldValue = "http://omk.zakupim.ru/", FieldDisplayName = "Ссылка на площадку", Position = 5 },
-                new Model { FieldName = "LinkToTender", FieldType = "String", FieldValue = linkToTender, FieldDisplayName = "Ссылка на тендер", Position = 6 }
+                new Model { FieldName = "LinkToPlatform", FieldType = "String", FieldValue = "http://omk.zakupim.ru/", FieldDisplayName = "OMK", Position = 5 },
+                new Model { FieldName = "LinkToTender", FieldType = "String", FieldValue = "http://omk.zakupim.ru"+linkToTender, FieldDisplayName = linkToTender.Substring(linkToTender.LastIndexOf("/")+1), Position = 6 }
             };
             omkModel.General = new List<Model>
             {
@@ -272,6 +307,9 @@ namespace omkParser
                 notmodel.Json = json;
                 notmodel.Organisations = CreateOrganisationName(omkmod.Organization[0].FieldValue);
                 notmodel.Customers = new List<OrganisationId> { CreateOrgId(omkmod.Organization[0].FieldValue) };
+                notmodel.Type = 28;
+                notmodel.Id = new { NM = "OMK" + omkmod.Header[5].FieldDisplayName };
+                notmodel.NotificationNumber = "OMK" + omkmod.Header[5].FieldDisplayName;
             }
             string notModelJson = JsonConvert.SerializeObject(notmodel);
             return notModelJson;

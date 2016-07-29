@@ -12,7 +12,7 @@ namespace omkParser.Models
         public List<OrganisationId> Customers { get; set; }
         public int Type { get; set; }
         public DateTime TineStamp { get; set; }
-        public string NitificationNumber { get; set; }
+        public string NotificationNumber { get; set; }
         public string OrderName { get; set; }
         public double? MaxPrice { get; set; }
         public DateTime? SubmissionCloseDateTime { get; set; }
