@@ -216,28 +216,57 @@ namespace omkParser
         {
             HtmlDocument docTable = new HtmlDocument();
             docTable.LoadHtml(table.OuterHtml);
+            
             List<List<Model>> body = new List<List<Model>>();
-
-            var trs = docTable.DocumentNode.SelectNodes("//tr").Skip(1);
-            foreach (var tr in trs)
+            string[] trsep = {"<tr" } ;
+            string[] tdsep = { "<td>" };
+            var trnodes = docTable.DocumentNode.OuterHtml.Split(trsep, StringSplitOptions.None).Skip(2);
+            foreach (var n in trnodes)
             {
                 List<Model> itemBody = new List<Model>();
-                var tdNodes = tr.ChildNodes.Where(x => x.Name == "td").ToArray();
-                if (tdNodes.Count() != 0)
+                var tdnodes = n.Split(tdsep, StringSplitOptions.None).Skip(1);
+                List<string> t = new List<string>();
+                foreach (var td in tdnodes)
                 {
-                    var tdchildnodes = tdNodes[0].ChildNodes.Where(x => x.Name == "td").ToArray();
+                    t.Add(td);
+                }
 
-                    itemBody.Add(new Model { FieldName = "Number", FieldType = "Int", FieldValue = tdNodes[0].ChildNodes[0].InnerText.Trim() });
-                    itemBody.Add(new Model { FieldName = "Name", FieldType = "String", FieldValue = tdNodes[0].ChildNodes[1].ChildNodes[0].InnerText.Trim() });
-                    itemBody.Add(new Model { FieldName = "NormNumber", FieldType = "String", FieldValue = tdNodes[0].ChildNodes[1].ChildNodes[3].ChildNodes[0].InnerText.Trim() });
-                    itemBody.Add(new Model { FieldName = "Ghost", FieldType = "String", FieldValue = tdNodes[0].ChildNodes[1].ChildNodes[3].ChildNodes[1].ChildNodes[0].InnerText.Trim() });
-                    itemBody.Add(new Model { FieldName = "Measure", FieldType = "String", FieldValue = tdNodes[0].ChildNodes[1].ChildNodes[3].ChildNodes[1].ChildNodes[1].ChildNodes[0].InnerText.Trim() });
-                    itemBody.Add(new Model { FieldName = "Count", FieldType = "Int", FieldValue = tdNodes[0].ChildNodes[1].ChildNodes[3].ChildNodes[1].ChildNodes[1].ChildNodes[1].ChildNodes[0].InnerText.Trim() });
-                    itemBody.Add(new Model { FieldName = "DeliveryTime", FieldType = "DataTime", FieldValue = tdNodes[0].ChildNodes[1].ChildNodes[3].ChildNodes[1].ChildNodes[1].ChildNodes[1].ChildNodes[1].ChildNodes[0].InnerText.Trim() });
+                itemBody.Add(new Model { FieldName = "Number", FieldType = "Int", FieldValue = t[0].Substring(0, t[0].IndexOf("\n")).Trim() });
+                    itemBody.Add(new Model { FieldName = "Name", FieldType = "String", FieldValue = t[1].Substring(0, t[1].IndexOf("<script>")).Trim() });
+                    itemBody.Add(new Model { FieldName = "NormNumber", FieldType = "String", FieldValue = t[2].Substring(0, t[2].IndexOf("\n")).Trim() });
+                    itemBody.Add(new Model { FieldName = "Ghost", FieldType = "String", FieldValue = t[3].Substring(0, t[3].IndexOf("\n")).Trim() });
+                    itemBody.Add(new Model { FieldName = "Measure", FieldType = "String", FieldValue = t[4].Substring(0, t[4].IndexOf("\n")).Trim() });
+                    itemBody.Add(new Model { FieldName = "Count", FieldType = "Int", FieldValue = t[5].Substring(0, t[5].IndexOf("\n")).Trim() });
+                    itemBody.Add(new Model { FieldName = "DeliveryTime", FieldType = "DataTime", FieldValue = t[6].Substring(0, t[6].IndexOf("\n")).Trim() });
 
                     body.Add(itemBody);
-                }
+                   // Debug.WriteLine(t[1]);
             }
+           
+            //var trs = docTable.DocumentNode.SelectNodes("//tr").Skip(1);
+            //foreach (var tr in trs)
+            //{
+            //    //Debug.WriteLine(tr.OuterHtml);
+            //    //Debug.WriteLine("______________");
+            //    List<Model> itemBody = new List<Model>();
+            //    var tdNodes = tr.ChildNodes.Where(x => x.Name == "td").ToArray();
+            //    if (tdNodes.Count() != 0)
+            //    {
+            //        var tdchildnodes = tdNodes[0].ChildNodes.Where(x => x.Name == "td").ToArray();
+
+            //        itemBody.Add(new Model { FieldName = "Number", FieldType = "Int", FieldValue = tdNodes[0].ChildNodes[0].InnerText.Trim() });
+            //        itemBody.Add(new Model { FieldName = "Name", FieldType = "String", FieldValue = tdNodes[0].ChildNodes[1].ChildNodes[0].InnerText.Trim() });
+            //       // itemBody.Add(new Model { FieldName = "NormNumber", FieldType = "String", FieldValue = tdNodes[0].ChildNodes[1].ChildNodes[3].ChildNodes[0].InnerText.Trim() });
+            //       // itemBody.Add(new Model { FieldName = "NormNumber", FieldType = "String", FieldValue = tdNodes[0].ChildNodes[1].ChildNodes[3].InnerText.Trim() });
+            //       // itemBody.Add(new Model { FieldName = "Ghost", FieldType = "String", FieldValue = tdNodes[0].ChildNodes[1].ChildNodes[3].ChildNodes[1].ChildNodes[0].InnerText.Trim() });
+            //       // itemBody.Add(new Model { FieldName = "Measure", FieldType = "String", FieldValue = tdNodes[0].ChildNodes[1].ChildNodes[3].ChildNodes[1].ChildNodes[1].ChildNodes[0].InnerText.Trim() });
+            //        //itemBody.Add(new Model { FieldName = "Count", FieldType = "Int", FieldValue = tdNodes[0].ChildNodes[1].ChildNodes[3].ChildNodes[1].ChildNodes[1].ChildNodes[1].ChildNodes[0].InnerText.Trim() });
+            //       // itemBody.Add(new Model { FieldName = "DeliveryTime", FieldType = "DataTime", FieldValue = tdNodes[0].ChildNodes[1].ChildNodes[3].ChildNodes[1].ChildNodes[1].ChildNodes[1].ChildNodes[1].ChildNodes[0].InnerText.Trim() });
+
+            //        body.Add(itemBody);
+            //        //Debug.WriteLine(tdNodes[0].ChildNodes[1].OuterHtml);
+            //    }
+            //}
             return body;
         }
 
