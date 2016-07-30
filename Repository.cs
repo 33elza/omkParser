@@ -45,24 +45,14 @@ namespace omkParser
 
         public void SendToRedis(string message)
         {
-            //var factory = new ConnectionFactory() {
-            //    HostName = ConfigurationManager.ConnectionStrings["rebbit"].ConnectionString,
-            //    UserName = ConfigurationManager.ConnectionStrings["rebbitUser"].ConnectionString,
-            //    Password = ConfigurationManager.ConnectionStrings["rebbitPassword"].ConnectionString,
-            //    Port = 15672
-            //};
             ConnectionFactory factory = new ConnectionFactory();
             factory.UserName = "user";
             factory.Password = "123456";
-            //factory.VirtualHost = "/";
             factory.Protocol = Protocols.DefaultProtocol;
-            factory.HostName = "10.0.0.2";
+            factory.HostName = "10.0.1.77";
             factory.Port = 5672;
             IConnection connection = factory.CreateConnection();
 
-            //var factory = new ConnectionFactory();
-            //factory.Uri = "amqp://user:123456@10.0.0.2:15672/";
-            // using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
                 //channel.QueueDeclare(queue: ConfigurationManager.AppSettings["qeueuname"],
