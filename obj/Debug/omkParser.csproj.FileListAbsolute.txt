@@ -24,3 +24,10 @@ C:\Users\nt\Source\Repos\omkParser\obj\Debug\omkParser.csprojResolveAssemblyRefe
 C:\Users\ELZ\Desktop\omkParser\bin\Debug\omkParser.exe.config
 C:\Users\ELZ\Desktop\omkParser\obj\Debug\omkParser.exe
 C:\Users\ELZ\Desktop\omkParser\obj\Debug\omkParser.pdb
+C:\Users\ELZ\Desktop\omkParser\bin\Debug\omkParser.exe
+C:\Users\ELZ\Desktop\omkParser\bin\Debug\omkParser.pdb
+C:\Users\ELZ\Desktop\omkParser\bin\Debug\Newtonsoft.Json.dll
+C:\Users\ELZ\Desktop\omkParser\bin\Debug\HtmlAgilityPack.pdb
+C:\Users\ELZ\Desktop\omkParser\bin\Debug\HtmlAgilityPack.xml
+C:\Users\ELZ\Desktop\omkParser\bin\Debug\RabbitMQ.Client.xml
+C:\Users\ELZ\Desktop\omkParser\obj\Debug\omkParser.csprojResolveAssemblyReference.cache

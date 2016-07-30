@@ -82,15 +82,54 @@ namespace omkParser
             var info = doc.DocumentNode.SelectSingleNode("//td[@class='bodypanel']");
 
             var nodes = doc.DocumentNode.SelectNodes("//td[@class='bodypanel'] //b").ToList();
-           
-            var emailscript = doc.DocumentNode.SelectNodes("//td[@class='bodypanel'] //script").FirstOrDefault().InnerHtml;          
+
+            string LotNumber, State, Customer, LotName, Requirements, RequirementsTMC, OtherRequirements, CriterialChoiceSuppliers, FIO, Contacts, DatePublication, DateExtension, BiddingEnd, DeliveryTime;
+            Contacts = ""; FIO = ""; DateExtension = ""; DatePublication = ""; BiddingEnd = ""; LotName = ""; DeliveryTime = ""; State = ""; LotNumber = ""; Requirements = ""; RequirementsTMC = ""; OtherRequirements = ""; CriterialChoiceSuppliers = "";
+            Customer = "";
+            OmkModel omkModel = new OmkModel();
+            foreach (HtmlNode node in nodes)
+            {
+                switch (node.InnerText)
+                {
+                    case "Номер лота:": LotNumber = node.NextSibling.InnerText;
+                        break;
+                    case "Статус:": State = node.NextSibling.InnerText;
+                        break;
+                    case "Запрос предложений на поставку МТР для:": Customer = node.NextSibling.InnerText;
+                        break;
+                    case "Наименование лота:": LotName = node.NextSibling.InnerText;
+                        break;
+                    case "Требования к поставщику:": Requirements = node.NextSibling.InnerText;
+                        break;
+                    case "Требования к ТМЦ:": RequirementsTMC = node.NextSibling.InnerText;
+                        break;
+                    case "Прочие требования:": OtherRequirements = node.NextSibling.InnerText;
+                        break;
+                    case "Критерии выбора поставщика:": CriterialChoiceSuppliers = node.NextSibling.InnerText;
+                        break;
+                    case "Закупщик:": FIO = node.NextSibling.InnerText;
+                        break;
+                    case "Контакты:": Contacts = node.NextSibling.InnerText;
+                        break;
+                    case "Дата размещения запроса:": DatePublication = node.NextSibling.InnerText;
+                        break;
+                    case "Дата последнего продления запроса:": DateExtension = node.NextSibling.InnerText;
+                        break;
+                    case "Дата окончания приема предложений:": BiddingEnd = node.NextSibling.NextSibling.InnerText;
+                        break;
+                    case "Требуемый срок поставки:": DeliveryTime = node.NextSibling.InnerText;
+                        break;
+                }
+            }
+
+            var emailscript = doc.DocumentNode.SelectNodes("//td[@class='bodypanel'] //script").FirstOrDefault().InnerHtml;
 
             var doclinks = doc.DocumentNode.SelectNodes("//td[@class='bodypanel'] //a");
 
             HtmlNode lotTable = doc.DocumentNode.SelectSingleNode("//table[@class='framer pt8']");
 
-            string phone = nodes[12].NextSibling.InnerText.Trim().Substring(nodes[12].NextSibling.InnerText.Trim().IndexOf(';') + 1).Replace(";", "").Trim();
-            OmkModel omkModel = new OmkModel();
+            string phone = Contacts.Trim().Substring(Contacts.Trim().IndexOf(';') + 1).Replace(";", "").Trim();
+
             omkModel.Categories = new List<Dictionary<string, string>>
             {
                 new Dictionary<string, string>
@@ -103,53 +142,53 @@ namespace omkParser
                        { "ContactsInfo", "Контактная информация" },
                        { "Documents", "Документы" }
                 }
-            };                                  
+            };
             omkModel.Header = new List<Model>
             {
                 new Model { FieldName = "Type", FieldType = "String", FieldValue = "Запрос предложений", FieldDisplayName = "Тип процедуры", Position = 1 },
-                new Model { FieldName = "State", FieldType = "String", FieldValue = nodes[1].NextSibling.InnerText.Trim(), FieldDisplayName = "Состояние процедуры", Position = 2 },
+                new Model { FieldName = "State", FieldType = "String", FieldValue = State.Trim(), FieldDisplayName = "Состояние процедуры", Position = 2 },
                 new Model { FieldName = "Platfom", FieldType = "String", FieldValue = "OMK", FieldDisplayName = "Площадка", Position = 3 },
-                new Model { FieldName = "Region", FieldType = "String", FieldValue = DefineRegion(nodes[2].NextSibling.InnerText.Trim()), FieldDisplayName = "Регион", Position = 4 },
+                new Model { FieldName = "Region", FieldType = "String", FieldValue = DefineRegion(Customer.Trim()), FieldDisplayName = "Регион", Position = 4 },
                 new Model { FieldName = "LinkToPlatform", FieldType = "String", FieldValue = "http://omk.zakupim.ru/", FieldDisplayName = "OMK", Position = 5 },
-                new Model { FieldName = "LinkToTender", FieldType = "String", FieldValue = "http://omk.zakupim.ru"+linkToTender, FieldDisplayName = linkToTender.Substring(linkToTender.LastIndexOf("/")+1), Position = 6 }
+                new Model { FieldName = "LinkToTender", FieldType = "String", FieldValue = "http://omk.zakupim.ru"+linkToTender, FieldDisplayName = LotNumber.Trim(), Position = 6 }
             };
             omkModel.General = new List<Model>
             {
-                new Model { FieldName = "Name", FieldType = "String", FieldValue = nodes[5].NextSibling.InnerText.Trim(), FieldDisplayName = "Наименование лота", Position = 1 },
-                new Model { FieldName = "Customer", FieldType = "String", FieldValue = nodes[2].NextSibling.InnerText.Trim(), FieldDisplayName = "Организация заказчик", Position = 2 },
-                new Model { FieldName = "DeliveryTime", FieldType = "DateTime", FieldValue = nodes[6].NextSibling.InnerText.Trim(), FieldDisplayName = "Сроки поставки", Position = 3 },
-                new Model { FieldName = "Requirements", FieldType = "String", FieldValue = nodes[7].NextSibling.InnerText.Trim(), FieldDisplayName = "Требования к поставщику", Position = 4 },
-                new Model { FieldName = "Requirements TMC", FieldType = "String", FieldValue = nodes[8].NextSibling.InnerText.Trim(), FieldDisplayName = "Требования к ТМЦ", Position = 5 },
-                new Model { FieldName = "Other Requirements", FieldType = "String", FieldValue = nodes[9].NextSibling.InnerText.Trim(), FieldDisplayName = "Прочие требования", Position = 6 },
-                new Model { FieldName = "CriterialChoiceSuppliers", FieldType = "String", FieldValue = nodes[10].NextSibling.InnerText.Trim(), FieldDisplayName = "Критерии выбора поставщика", Position = 7 }
+                new Model { FieldName = "Name", FieldType = "String", FieldValue = LotName.Trim(), FieldDisplayName = "Наименование лота", Position = 1 },
+                new Model { FieldName = "Customer", FieldType = "String", FieldValue = Customer.Trim(), FieldDisplayName = "Организация заказчик", Position = 2 },
+                new Model { FieldName = "DeliveryTime", FieldType = "DateTime", FieldValue = DeliveryTime.Trim(), FieldDisplayName = "Сроки поставки", Position = 3 },
+                new Model { FieldName = "Requirements", FieldType = "String", FieldValue = Requirements.Trim(), FieldDisplayName = "Требования к поставщику", Position = 4 },
+                new Model { FieldName = "Requirements TMC", FieldType = "String", FieldValue = RequirementsTMC.Trim(), FieldDisplayName = "Требования к ТМЦ", Position = 5 },
+                new Model { FieldName = "Other Requirements", FieldType = "String", FieldValue = OtherRequirements.Trim(), FieldDisplayName = "Прочие требования", Position = 6 },
+                new Model { FieldName = "CriterialChoiceSuppliers", FieldType = "String", FieldValue = CriterialChoiceSuppliers.Trim(), FieldDisplayName = "Критерии выбора поставщика", Position = 7 }
 
             };
             omkModel.ContactsInfo = new List<Model>
             {
-                new Model { FieldName = "FIO", FieldType = "String", FieldValue = nodes[11].NextSibling.InnerText.Trim(), FieldDisplayName = "ФИО контактного лица", Position = 1 },
+                new Model { FieldName = "FIO", FieldType = "String", FieldValue = FIO.Trim(), FieldDisplayName = "ФИО контактного лица", Position = 1 },
                 new Model { FieldName = "Phone", FieldType = "String", FieldValue = phone, FieldDisplayName = "Номер телефона", Position = 2 },
                 new Model { FieldName = "Email", FieldType = "String", FieldValue = CreateEmail(emailscript), FieldDisplayName = "Электронная почта", Position = 3 },
-                new Model { FieldName = "Adress", FieldType = "String", FieldValue = nodes[12].NextSibling.InnerText.Trim().Substring(0, nodes[12].NextSibling.InnerText.Trim().IndexOf(';')).Trim(), FieldDisplayName = "Адрес", Position = 4 }
+                new Model { FieldName = "Adress", FieldType = "String", FieldValue = Contacts.Trim().Substring(0, Contacts.Trim().IndexOf(';')).Trim(), FieldDisplayName = "Адрес", Position = 4 }
             };
             omkModel.ProcedureOrder = new List<Model>
             {
-                new Model { FieldName = "DatePublication", FieldType = "DataTime", FieldValue = nodes[13].NextSibling.InnerText.Trim(), FieldDisplayName = "Дата размещения запроса", Position = 1 },
-                new Model { FieldName = "DateExtension", FieldType = "DataTime", FieldValue = nodes[14].NextSibling.InnerText.Trim(), FieldDisplayName = "Дата последнего продления запроса", Position = 2 },
-                new Model { FieldName = "BiddingEnd", FieldType = "DataTime", FieldValue = nodes[16].InnerText, FieldDisplayName = "Дата окончания приема предложений", Position = 3 }
+                new Model { FieldName = "DatePublication", FieldType = "DataTime", FieldValue = DatePublication.Trim(), FieldDisplayName = "Дата размещения запроса", Position = 1 },
+                new Model { FieldName = "DateExtension", FieldType = "DataTime", FieldValue = DateExtension.Trim(), FieldDisplayName = "Дата последнего продления запроса", Position = 2 },
+                new Model { FieldName = "BiddingEnd", FieldType = "DataTime", FieldValue = BiddingEnd, FieldDisplayName = "Дата окончания приема предложений", Position = 3 }
             };
 
             if (doclinks != null)
             {
                 omkModel.Documents = new List<Model>();
-                for (int i=0; i<doclinks.Count;i++)
-                {                    
+                for (int i = 0; i < doclinks.Count; i++)
+                {
                     omkModel.Documents.Add(new Model { FieldName = "Document", FieldType = "String", FieldValue = "http://omk.zakupim.ru/" + doclinks[i].Attributes["href"].Value, FieldDisplayName = doclinks[i].InnerText, Position = i + 1 });
                 }
             }
             omkModel.Organization = new List<Model>
           {
-               new Model { FieldName = "Name", FieldType = "String", FieldValue = nodes[2].NextSibling.InnerText.Trim(), FieldDisplayName = "Название организации", Position = 1 },
-               new Model { FieldName = "Address", FieldType = "String", FieldValue = DefineOrgAddress(nodes[2].NextSibling.InnerText.Trim()), FieldDisplayName = "Адрес", Position = 2 }
+               new Model { FieldName = "Name", FieldType = "String", FieldValue = Customer.Trim(), FieldDisplayName = "Название организации", Position = 1 },
+               new Model { FieldName = "Address", FieldType = "String", FieldValue = DefineOrgAddress(Customer.Trim()), FieldDisplayName = "Адрес", Position = 2 }
           };
 
             ObjectValueModel obValMod = new ObjectValueModel();
@@ -168,7 +207,7 @@ namespace omkParser
             omkModel.Object = obMod;
 
             string json = JsonConvert.SerializeObject(omkModel);
-            
+
             Debug.WriteLine(json);
             return json;
         }
