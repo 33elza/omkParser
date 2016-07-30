@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using HtmlAgilityPack;
 using System.Configuration;
 using RabbitMQ.Client;
+using RabbitMQ.Client;
 
 namespace omkParser
 {
@@ -26,9 +27,11 @@ namespace omkParser
             output.Append(reader.ReadToEnd());
             resp.Close();
             reader.Close();
+            byte[] stringBytes = Encoding.Default.GetBytes(output.ToString());
+            var outputEncode = Encoding.GetEncoding("windows-1251").GetString(stringBytes);
 
             //Debug.WriteLine(output);
-            return output.ToString();
+            return outputEncode;
         }
 
         public HtmlDocument CreateDoc(string text)
@@ -42,15 +45,31 @@ namespace omkParser
 
         public void SendToRedis(string message)
         {
-            var factory = new ConnectionFactory() { HostName = "localhost" };
-            using (var connection = factory.CreateConnection())
+            //var factory = new ConnectionFactory() {
+            //    HostName = ConfigurationManager.ConnectionStrings["rebbit"].ConnectionString,
+            //    UserName = ConfigurationManager.ConnectionStrings["rebbitUser"].ConnectionString,
+            //    Password = ConfigurationManager.ConnectionStrings["rebbitPassword"].ConnectionString,
+            //    Port = 15672
+            //};
+            ConnectionFactory factory = new ConnectionFactory();
+            factory.UserName = "user";
+            factory.Password = "123456";
+            //factory.VirtualHost = "/";
+            factory.Protocol = Protocols.DefaultProtocol;
+            factory.HostName = "10.0.0.2";
+            factory.Port = 5672;
+            IConnection connection = factory.CreateConnection();
+
+            //var factory = new ConnectionFactory();
+            //factory.Uri = "amqp://user:123456@10.0.0.2:15672/";
+            // using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
-                channel.QueueDeclare(queue: ConfigurationManager.AppSettings["qeueuname"],
-                                     durable: false,
-                                     exclusive: false,
-                                     autoDelete: false,
-                                     arguments: null);
+                //channel.QueueDeclare(queue: ConfigurationManager.AppSettings["qeueuname"],
+                //                     durable: false,
+                //                     exclusive: false,
+                //                     autoDelete: false,
+                //                     arguments: null);
 
 
                 var body = Encoding.UTF8.GetBytes(message);
@@ -59,7 +78,7 @@ namespace omkParser
                                      routingKey: ConfigurationManager.AppSettings["qeueuname"],
                                      basicProperties: null,
                                      body: body);
-               // Console.WriteLine(" [x] Sent {0}", message);
+              // Console.WriteLine(" [x] Sent {0}", message);
             }
         }
        

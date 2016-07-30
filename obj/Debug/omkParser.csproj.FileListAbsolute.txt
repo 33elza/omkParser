@@ -11,3 +11,13 @@ C:\Users\ELZ\Documents\Visual Studio 2013\Projects\omkParser\omkParser\bin\Debug
 C:\Users\ELZ\Documents\Visual Studio 2013\Projects\omkParser\omkParser\bin\Debug\Newtonsoft.Json.xml
 C:\Users\ELZ\Documents\Visual Studio 2013\Projects\omkParser\omkParser\bin\Debug\RabbitMQ.Client.dll
 C:\Users\ELZ\Documents\Visual Studio 2013\Projects\omkParser\omkParser\bin\Debug\RabbitMQ.Client.xml
+C:\Users\nt\Source\Repos\omkParser\bin\Debug\omkParser.exe.config
+C:\Users\nt\Source\Repos\omkParser\obj\Debug\omkParser.exe
+C:\Users\nt\Source\Repos\omkParser\obj\Debug\omkParser.pdb
+C:\Users\nt\Source\Repos\omkParser\bin\Debug\omkParser.exe
+C:\Users\nt\Source\Repos\omkParser\bin\Debug\omkParser.pdb
+C:\Users\nt\Source\Repos\omkParser\bin\Debug\HtmlAgilityPack.pdb
+C:\Users\nt\Source\Repos\omkParser\bin\Debug\HtmlAgilityPack.xml
+C:\Users\nt\Source\Repos\omkParser\bin\Debug\Newtonsoft.Json.xml
+C:\Users\nt\Source\Repos\omkParser\bin\Debug\RabbitMQ.Client.xml
+C:\Users\nt\Source\Repos\omkParser\obj\Debug\omkParser.csprojResolveAssemblyReference.cache

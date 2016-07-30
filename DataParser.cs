@@ -7,6 +7,7 @@ using HtmlAgilityPack;
 using System.Diagnostics;
 using Newtonsoft.Json;
 using omkParser.Models;
+using System.Globalization;
 
 namespace omkParser
 {
@@ -300,8 +301,8 @@ namespace omkParser
             if (json != null)
             {               
                 notmodel.OrderName = omkmod.General[0].FieldValue;
-                notmodel.SubmissionCloseDateTime = DateTime.Parse(omkmod.ProcedureOrder[2].FieldValue);
-                notmodel.PublicationDateTime = DateTime.Parse(omkmod.ProcedureOrder[0].FieldValue);
+                notmodel.SubmissionCloseDateTime = GetDateTime(omkmod.ProcedureOrder[2].FieldValue);
+                notmodel.PublicationDateTime = GetDateTime(omkmod.ProcedureOrder[0].FieldValue);
                 notmodel.PlacingWayId = 500;
                 notmodel.Multilot = omkmod.Object.FieldValue.Body.Count > 1 ? true : false;
                 notmodel.Json = json;
@@ -313,6 +314,14 @@ namespace omkParser
             }
             string notModelJson = JsonConvert.SerializeObject(notmodel);
             return notModelJson;
+        }
+
+        public DateTime GetDateTime(string time)
+        {
+            DateTime date;
+            var success = DateTime.TryParseExact(time.Trim(), "dd MMMM yyyy hh:mm:ss",
+                CultureInfo.GetCultureInfo("ru-Ru"), DateTimeStyles.None, out date);
+            return date;
         }
 
     }
