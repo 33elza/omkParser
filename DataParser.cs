@@ -362,6 +362,26 @@ namespace omkParser
                 default: return "";
             }      
         }
+        public int DefineRegionCode(string orgName)
+        {
+            switch (orgName)
+            {
+                case "ЗАО ОМК": return 50;
+                case "ОАО \"АТЗ\"": return 16;
+                case "ОАО \"БАЗ\"": return 2;
+                case "ОАО \"ВМЗ\"": return 52;
+                case "ОАО \"Губахинский Кокс\"": return 59;
+                case "ОАО \"ОМК-Сталь\" (ЛПК)": return 52;
+                case "ОАО \"Трубодеталь\"": return 74;
+                case "ОАО \"ЧМЗ\"": return 59;
+                case "ОАО \"Щелмет\"": return 50;
+                case "ООО \"БГДК\"": return 31;
+                case "ООО \"ВМЗ-Техно\"": return 52;
+                case "ООО \"ОМК-Проект\"": return 52;
+                case "Филиал ОАО \"Трубодеталь\" в г.Чусовой": return 59;
+                default: return 0;
+            }
+        }
         public string CreateNotModel(string json)
         {
             OmkModel omkmod = JsonConvert.DeserializeObject<OmkModel>(json);
@@ -371,7 +391,7 @@ namespace omkParser
                 notmodel.OrderName = omkmod.General[0].FieldValue;
                 notmodel.SubmissionCloseDateTime = GetDateTime(omkmod.ProcedureOrder[2].FieldValue);
                 notmodel.PublicationDateTime = GetDateTime(omkmod.ProcedureOrder[0].FieldValue);
-                notmodel.PlacingWayId = 500;
+                notmodel.PlacingWayId = 5000;
                 notmodel.Multilot = omkmod.Object.FieldValue.Body.Count > 1 ? true : false;
                 notmodel.Json = json;
                 notmodel.Organisations = CreateOrganisationName(omkmod.Organization[0].FieldValue);
@@ -379,6 +399,15 @@ namespace omkParser
                 notmodel.Type = 28;
                 notmodel.Id = new { NM = "OMK" + omkmod.Header[5].FieldDisplayName };
                 notmodel.NotificationNumber = "OMK" + omkmod.Header[5].FieldDisplayName;
+                notmodel.RegionCode = DefineRegionCode(omkmod.Organization[0].FieldValue);
+               
+                notmodel.Text = notmodel.OrderName + " 5000 " + notmodel.Organisations + " " +notmodel.Customers.First().Inn + " " + notmodel.Customers.First().Kpp;
+                notmodel.KeySearch = notmodel.Organisations + notmodel.OrderName + " ";
+                foreach (var lot in omkmod.Object.FieldValue.Body)
+                {
+                    notmodel.KeySearch = notmodel.KeySearch + lot.Where(x => x.FieldName == "Name").Select(x => x.FieldValue);
+
+                }
             }
             string notModelJson = JsonConvert.SerializeObject(notmodel);
             return notModelJson;

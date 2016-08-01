@@ -10,12 +10,21 @@ using System.Threading.Tasks;
 using HtmlAgilityPack;
 using System.Configuration;
 using RabbitMQ.Client;
-using RabbitMQ.Client;
 
 namespace omkParser
 {
-    class Repository
-    {
+    class Repository    {
+        public Repository()
+        {
+            //ConnectionFactory factory = new ConnectionFactory();
+            //factory.UserName = "user";
+            //factory.Password = "123456";
+            //factory.Protocol = Protocols.DefaultProtocol;
+            //factory.HostName = "10.0.0.2";
+            //factory.Port = 5672;
+            //connection = factory.CreateConnection();
+        }
+        IConnection connection;
         public string LoadPage(string url)
         {
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
@@ -45,14 +54,6 @@ namespace omkParser
 
         public void SendToRedis(string message)
         {
-            ConnectionFactory factory = new ConnectionFactory();
-            factory.UserName = "user";
-            factory.Password = "123456";
-            factory.Protocol = Protocols.DefaultProtocol;
-            factory.HostName = "10.0.1.77";
-            factory.Port = 5672;
-            IConnection connection = factory.CreateConnection();
-
             using (var channel = connection.CreateModel())
             {
                 //channel.QueueDeclare(queue: ConfigurationManager.AppSettings["qeueuname"],
@@ -70,6 +71,23 @@ namespace omkParser
                                      body: body);
               // Console.WriteLine(" [x] Sent {0}", message);
             }
+        }
+        public void WriteFile(string msg)
+        {
+            StreamWriter file = new StreamWriter(Directory.GetCurrentDirectory() + @"\lasttender.txt");
+            
+            file.Write(msg);
+            file.Close();
+        }
+
+        public string ReadFile()
+        {
+            string msg;
+            StreamReader file = new StreamReader(Directory.GetCurrentDirectory() + @"\lasttender.txt", Encoding.UTF8);
+            msg = file.ReadLine();
+          
+            file.Close();
+            return msg;
         }
        
     }
