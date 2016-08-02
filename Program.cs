@@ -16,57 +16,9 @@ namespace omkParser
         {
             Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
-            Console.WriteLine("Выберете нужное: ");
-            Console.WriteLine("1 - все тендеры");
-            Console.WriteLine("2 - активные тендеры");
-            int choice = Convert.ToInt32(Console.ReadLine());
+        
             List<string> tendLinks;
 
-            if (choice == 1)
-            {
-                Repository rep = new Repository();
-                DataParser parser = new DataParser();
-                string txt = rep.LoadPage("http://omk.zakupim.ru/view_table_jx?sort=&up=&flt=8&flt_from=2008-1-1&flt_from_chk=true&flt_to=2016-7-27&flt_to_chk=false&09261455562063892");
-                //File.WriteAllText("test.txt", txt);
-                HtmlDocument doc = rep.CreateDoc(txt);
-                tendLinks = parser.CollectLinks(doc);
-
-                foreach (string link in tendLinks)
-                {
-                    Console.WriteLine("[INFO] >>> Get tender: {0}", "http://omk.zakupim.ru" + link);
-                    string tend = rep.LoadPage("http://omk.zakupim.ru" + link);
-                    HtmlDocument tendDoc = rep.CreateDoc(tend);
-                    string jsonModel = parser.CreateNotModel(parser.ParseTender(tendDoc, link));
-                    rep.SendToRedis(jsonModel);
-                }
-
-                while (true)
-                {
-                    tendLinks = parser.CollectActiveLinks(doc);
-                    string lasttender = rep.ReadFile().Substring(rep.ReadFile().LastIndexOf("/") + 1);
-
-                    foreach (string link in tendLinks)
-                    {
-                        if (Convert.ToInt32(link.Substring(link.LastIndexOf("/") + 1)) > Convert.ToInt32(lasttender))
-                        {
-                            Console.WriteLine("[INFO] >>> Get tender: {0}", "http://omk.zakupim.ru" + link);
-                            string tend = rep.LoadPage("http://omk.zakupim.ru" + link);
-                            HtmlDocument tendDoc = rep.CreateDoc(tend);
-                            string jsonModel = parser.CreateNotModel(parser.ParseTender(tendDoc, link));
-                            rep.SendToRedis(jsonModel);
-                        }
-
-                    }
-                    rep.WriteFile(tendLinks.First());
-                    Thread.Sleep(3600000);
-                    Console.ReadLine();
-                }
-            }
-
-
-
-            else if (choice == 2)
-            {
                 Repository rep = new Repository();
                 DataParser parser = new DataParser();
                 string txt = rep.LoadPage("http://omk.zakupim.ru/view_table_jx?sort=&up=&flt=8&flt_from=2008-1-1&flt_from_chk=true&flt_to=2016-7-27&flt_to_chk=false&09261455562063892");
@@ -90,17 +42,24 @@ namespace omkParser
 
                     foreach (string link in tendLinks)
                     {
-                        if (Convert.ToInt32(link.Substring(link.LastIndexOf("/") + 1)) > Convert.ToInt32(lasttender))
+                        if (lasttender!=null)
                         {
-                            Console.WriteLine("[INFO] >>> Get tender: {0}", "http://omk.zakupim.ru" + link);
-                            string tend = rep.LoadPage("http://omk.zakupim.ru" + link);
-                            HtmlDocument tendDoc = rep.CreateDoc(tend);
-                            string jsonModel = parser.CreateNotModel(parser.ParseTender(tendDoc, link));
-                            rep.SendToRedis(jsonModel);
+                            if (Convert.ToInt32(link.Substring(link.LastIndexOf("/") + 1)) > Convert.ToInt32(lasttender))
+                            {
+                                Console.WriteLine("[INFO] >>> Get tender: {0}", "http://omk.zakupim.ru" + link);
+                                string tend = rep.LoadPage("http://omk.zakupim.ru" + link);
+                                HtmlDocument tendDoc = rep.CreateDoc(tend);
+                                string jsonModel = parser.CreateNotModel(parser.ParseTender(tendDoc, link));
+                                rep.SendToRedis(jsonModel);
+                                rep.WriteFile(link);
+                            }
                         }
-
+                        else
+                        {
+                            rep.WriteFile("/view/23960");
+                        }
                     }
-                    rep.WriteFile(tendLinks.First());
+                   
                     Thread.Sleep(3600000);
                     Console.ReadLine();
                 }
@@ -116,6 +75,6 @@ namespace omkParser
             //HtmlDocument tendDoc = rep.CreateDoc(tend);
             //parser.ParseTender(tendDoc, "/view/23960");
             //Debug.WriteLine(parser.CreateNotModel(parser.ParseTender(tendDoc, "/view/23032")));
-        }
+        
     }
 }
